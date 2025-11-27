@@ -1,0 +1,1581 @@
+zabbix_export:
+  version: '7.4'
+  template_groups:
+    - uuid: ac554bdf73a14aa89946db7dcb8389fc
+      name: Templates/Printers
+    - uuid: 537f42ae18164beea0b0eb6c239ec8c9
+      name: Templates/Xerox
+  templates:
+    - uuid: d4dc40cd9f1340f1b702ad8c3d9d6686
+      template: 'Xerox AltaLink C81xx by SNMP'
+      name: 'Xerox AltaLink C81xx by SNMP'
+      description: 'Should work for all Xerox AltaLink C8100-series but only tested with C8135 and C8145.'
+      groups:
+        - name: Templates/Printers
+        - name: Templates/Xerox
+      items:
+        - uuid: c0d7ef8a6f50472d9e0589dfdd3da2c8
+          name: 'Drum Cartridge Black (R1) Install Date'
+          type: SNMP_AGENT
+          snmp_oid: 'get[.1.3.6.1.4.1.253.8.53.20.2.1.9.2.5.57.1]'
+          key: xerox.drum.r1.installdate
+          delay: 1h
+          history: 1d
+          value_type: TEXT
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.split(",")[0];'
+          tags:
+            - tag: class
+              value: 'Drum Cartridge'
+          triggers:
+            - uuid: a69ee3eb237243019ee3475233081a80
+              expression: 'change(/Xerox AltaLink C81xx by SNMP/xerox.drum.r1.installdate)=1'
+              recovery_mode: NONE
+              name: 'Drum Cartridge Black (R1) Install Date Changed'
+              priority: INFO
+              manual_close: 'YES'
+        - uuid: c4ee9bdce666420590caec13af7daeb1
+          name: 'Drum Cartridge Black (R1) max capacity'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.8.1.5]'
+          key: xerox.drum.r1.max
+          delay: 1h
+          history: 1d
+          trends: '0'
+        - uuid: 0d32367f20144c91815c733aa25c29dd
+          name: 'Drum Cartridge Black (R1) %'
+          type: CALCULATED
+          key: xerox.drum.r1.pct
+          delay: 1h
+          units: '!%'
+          params: '100 * last(//xerox.drum.r1.raw) / last(//xerox.drum.r1.max)'
+          tags:
+            - tag: class
+              value: 'Drum Cartridge'
+          triggers:
+            - uuid: 9590316039be4f53b2d3f0ad1247a640
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.drum.r1.pct)<= 0'
+              name: 'Drum Cartridge Black (R1) Empty'
+              priority: HIGH
+            - uuid: c1d492296193489f8b6223974bf8f807
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.drum.r1.pct)<={$SUPPLIES.WARN}'
+              name: 'Drum Cartridge Black (R1) Low ({ITEM.LASTVALUE1})'
+              priority: WARNING
+        - uuid: 73bb5694197f4073b6423ceb7509d5cb
+          name: 'Drum Cartridge Black (R1) (raw)'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.9.1.5]'
+          key: xerox.drum.r1.raw
+          delay: 1h
+          history: 1d
+          trends: '0'
+        - uuid: e9fad7ccacbc462c83c9e9052e5dd523
+          name: 'Drum Cartridge Cyan (R2) Install Date'
+          type: SNMP_AGENT
+          snmp_oid: 'get[.1.3.6.1.4.1.253.8.53.20.2.1.9.2.6.57.1]'
+          key: xerox.drum.r2.installdate
+          delay: 1h
+          history: 1d
+          value_type: TEXT
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.split(",")[0];'
+          tags:
+            - tag: class
+              value: 'Drum Cartridge'
+        - uuid: ce9876da8c4444cab1c7bd7a04b08cdc
+          name: 'Drum Cartridge Cyan (R2) max capacity'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.8.1.6]'
+          key: xerox.drum.r2.max
+          delay: 1h
+          history: 1d
+          trends: '0'
+        - uuid: 4335ede2fcef4ee5b8a95747be48ce12
+          name: 'Drum Cartridge Cyan (R2) %'
+          type: CALCULATED
+          key: xerox.drum.r2.pct
+          delay: 1h
+          units: '!%'
+          params: '100 * last(//xerox.drum.r2.raw) / last(//xerox.drum.r2.max)'
+          tags:
+            - tag: class
+              value: 'Drum Cartridge'
+          triggers:
+            - uuid: 2ec066cc8e0a4d58b577bef741f974fc
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.drum.r2.pct)<= 0'
+              name: 'Drum Cartridge Cyan (R2) Empty'
+              priority: HIGH
+            - uuid: 7476f8d11a51471480978e57e00dd8f1
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.drum.r2.pct)<{$SUPPLIES.WARN}'
+              name: 'Drum Cartridge Cyan (R2) Low ({ITEM.LASTVALUE1})'
+              priority: WARNING
+        - uuid: 1d9e755558b34de5888d7cecb134c399
+          name: 'Drum Cartridge Cyan (R2) (raw)'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.9.1.6]'
+          key: xerox.drum.r2.raw
+          delay: 1h
+          history: 1d
+          trends: '0'
+        - uuid: 92af2d5ea998445c9d8b080040ce7310
+          name: 'Drum Cartridge Magenta (R3) Install Date'
+          type: SNMP_AGENT
+          snmp_oid: 'get[.1.3.6.1.4.1.253.8.53.20.2.1.9.2.7.57.1]'
+          key: xerox.drum.r3.installdate
+          delay: 1h
+          history: 1d
+          value_type: TEXT
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.split(",")[0];'
+          tags:
+            - tag: class
+              value: 'Drum Cartridge'
+        - uuid: 215edc5b6c45497d97b4baf0d81fe2ee
+          name: 'Drum Cartridge Magenta (R3) max capacity'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.8.1.7]'
+          key: xerox.drum.r3.max
+          delay: 1h
+          history: 1d
+          trends: '0'
+        - uuid: 5b29b118e47a4851bfee30d35059f69d
+          name: 'Drum Cartridge Magenta (R3) %'
+          type: CALCULATED
+          key: xerox.drum.r3.pct
+          delay: 1h
+          units: '!%'
+          params: '100 * last(//xerox.drum.r3.raw) / last(//xerox.drum.r3.max)'
+          tags:
+            - tag: class
+              value: 'Drum Cartridge'
+          triggers:
+            - uuid: a956e12df4da4d469f69392ad2fc2a33
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.drum.r3.pct)<= 0'
+              name: 'Drum Cartridge Magenta (R3) Empty'
+              priority: HIGH
+            - uuid: 179ea969de0148fab9d333bd1df12deb
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.drum.r3.pct)<{$SUPPLIES.WARN}'
+              name: 'Drum Cartridge Magenta (R3) Low ({ITEM.LASTVALUE1})'
+              priority: WARNING
+        - uuid: 81ae5869eb9f41eba93893a53166d5e0
+          name: 'Drum Cartridge Magenta (R3) (raw)'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.9.1.7]'
+          key: xerox.drum.r3.raw
+          delay: 1h
+          history: 1d
+          trends: '0'
+        - uuid: cf412790b0b345ce9bc2ea3df551e9a2
+          name: 'Drum Cartridge Yellow (R4) Install Date'
+          type: SNMP_AGENT
+          snmp_oid: 'get[.1.3.6.1.4.1.253.8.53.20.2.1.9.2.8.57.1]'
+          key: xerox.drum.r4.installdate
+          delay: 1h
+          history: 1d
+          value_type: TEXT
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.split(",")[0];'
+          tags:
+            - tag: class
+              value: 'Drum Cartridge'
+        - uuid: 7fc3c951c03b488993247003f41acf15
+          name: 'Drum Cartridge Yellow (R4) max capacity'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.8.1.8]'
+          key: xerox.drum.r4.max
+          delay: 1h
+          history: 1d
+          trends: '0'
+        - uuid: 33492871fd6b4df8990be00248b257e6
+          name: 'Drum Cartridge Yellow (R4) %'
+          type: CALCULATED
+          key: xerox.drum.r4.pct
+          delay: 1h
+          units: '!%'
+          params: '100 * last(//xerox.drum.r4.raw) / last(//xerox.drum.r4.max)'
+          tags:
+            - tag: class
+              value: 'Drum Cartridge'
+          triggers:
+            - uuid: a5f762de5a8a4782ac3ae79c02e3d9ce
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.drum.r4.pct)<= 0'
+              name: 'Drum Cartridge Yellow (R4) Empty'
+              priority: HIGH
+            - uuid: b6dbecd91d5343c1a46f5bd6fbcc5f71
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.drum.r4.pct)<{$SUPPLIES.WARN}'
+              name: 'Drum Cartridge Yellow (R4) Low ({ITEM.LASTVALUE1})'
+              priority: WARNING
+        - uuid: ce3c693b648e4d2287f9926999b593a0
+          name: 'Drum Cartridge Yellow (R4) (raw)'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.9.1.8]'
+          key: xerox.drum.r4.raw
+          delay: 1h
+          history: 1d
+          trends: '0'
+        - uuid: d9109985fa234514a622020f1f8b02b4
+          name: 'Second Bias Transfer Roll Install Date'
+          type: SNMP_AGENT
+          snmp_oid: 'get[.1.3.6.1.4.1.253.8.53.20.2.1.9.2.12.57.1]'
+          key: xerox.drum.sbtr.installdate
+          delay: 1h
+          history: 1d
+          value_type: TEXT
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.split(",")[0];'
+          tags:
+            - tag: class
+              value: 'Second Bias Transfer Roll'
+        - uuid: 38d04b7c7eeb4613b3a0102a9fb8960d
+          name: 'Transfer Belt Cleaner Install Date'
+          type: SNMP_AGENT
+          snmp_oid: 'get[.1.3.6.1.4.1.253.8.53.20.2.1.9.2.11.57.1]'
+          key: xerox.drum.tbc.installdate
+          delay: 1h
+          history: 1d
+          value_type: TEXT
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.split(",")[0];'
+          tags:
+            - tag: class
+              value: 'Transfer Belt Cleaner'
+        - uuid: ae225b3f6add4ceda9b79b3818e5c72b
+          name: 'Waste Toner Container Install Date'
+          type: SNMP_AGENT
+          snmp_oid: 'get[.1.3.6.1.4.1.253.8.53.20.2.1.9.2.10.57.1]'
+          key: xerox.drum.wtc.installdate
+          delay: 1h
+          history: 1d
+          value_type: TEXT
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.split(",")[0];'
+          tags:
+            - tag: class
+              value: 'Waste Toner Container'
+        - uuid: 495f46b4dd4142a8ba452e52b35ea22f
+          name: 'Printer Location'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.1.6.0]'
+          key: xerox.location
+          delay: 1h
+          value_type: TEXT
+        - uuid: 15f4f729e663440ab272e0a744a7915d
+          name: 'Printer MAC address'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.2.2.1.6.1]'
+          key: xerox.mac
+          delay: 1h
+          value_type: TEXT
+          inventory_link: MACADDRESS_A
+        - uuid: 3ef6bd08450043b39375466db2b5e1b2
+          name: 'Printer Name'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.1.5.0]'
+          key: xerox.name
+          delay: 1h
+          value_type: TEXT
+        - uuid: f3230fffee5b46fe87e9411388368bd7
+          name: 'Pages Copied Total'
+          type: CALCULATED
+          key: xerox.page.copied.total
+          delay: 5m
+          units: '!pages'
+          params: 'last(//xerox.page.copy.bw) + last(//xerox.page.copy.color)'
+        - uuid: 507eae545cea4cf28179530a8fc264b5
+          name: 'Pages Copied B/W'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.4.1.253.8.53.13.2.1.6.12.20.3]'
+          key: xerox.page.copy.bw
+          delay: 5m
+          units: '!pages'
+        - uuid: 73830423a39e4f199632a87a345378f4
+          name: 'Pages Copied B/W (delta)'
+          type: DEPENDENT
+          key: xerox.page.copy.bw.delta
+          value_type: FLOAT
+          units: '!pages'
+          preprocessing:
+            - type: SIMPLE_CHANGE
+          master_item:
+            key: xerox.page.copy.bw
+        - uuid: be74fd27d4eb4e58890aa3143c2a1117
+          name: 'Pages Copied Color'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.4.1.253.8.53.13.2.1.6.12.20.25]'
+          key: xerox.page.copy.color
+          delay: 5m
+          units: '!pages'
+        - uuid: 024cdb1020b541e0854134677cdc6be4
+          name: 'Pages Copied Color (delta)'
+          type: DEPENDENT
+          key: xerox.page.copy.color.delta
+          value_type: FLOAT
+          units: '!pages'
+          preprocessing:
+            - type: SIMPLE_CHANGE
+          master_item:
+            key: xerox.page.copy.color
+        - uuid: da17d341ebab48e6b5397d5563983dae
+          name: 'Pages Print B/W'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.4.1.253.8.53.13.2.1.6.1.20.34]'
+          key: xerox.page.print.bw
+          delay: 5m
+          units: '!pages'
+        - uuid: 73bb6a8202d34390920ab8f9d269f326
+          name: 'Pages Print B/W (delta)'
+          type: DEPENDENT
+          key: xerox.page.print.bw.delta
+          value_type: FLOAT
+          units: '!pages'
+          preprocessing:
+            - type: SIMPLE_CHANGE
+          master_item:
+            key: xerox.page.print.bw
+        - uuid: c9b42eb1a5c94628a07a675260ca1688
+          name: 'Pages Print Color'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.4.1.253.8.53.13.2.1.6.1.20.33]'
+          key: xerox.page.print.color
+          delay: 5m
+          units: '!pages'
+        - uuid: e567aaa0916a4ce89e6b33694e6e45a2
+          name: 'Pages Print Color (delta)'
+          type: DEPENDENT
+          key: xerox.page.print.color.delta
+          value_type: FLOAT
+          units: '!pages'
+          preprocessing:
+            - type: SIMPLE_CHANGE
+          master_item:
+            key: xerox.page.print.color
+        - uuid: 98c91a0270124b04952a237e316e04c0
+          name: 'Pages Print (delta)'
+          type: DEPENDENT
+          key: xerox.page.print.delta
+          value_type: FLOAT
+          units: '!pages'
+          preprocessing:
+            - type: SIMPLE_CHANGE
+          master_item:
+            key: xerox.page.print.total
+        - uuid: 579eaaa9bef64ddcbbd44c3caa58fea3
+          name: 'Pages Print Total'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.10.2.1.4.1.1]'
+          key: xerox.page.print.total
+          delay: 5m
+          units: '!pages'
+        - uuid: 9a41db59b5054f2aaa37ddb818cfa924
+          name: 'Second Bias Transfer Roll max capacity'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.8.1.11]'
+          key: xerox.sbtr.max
+          delay: 1h
+          history: 1d
+          trends: '0'
+        - uuid: cd86380a76aa40f18f868942969a764d
+          name: 'Second Bias Transfer Roll %'
+          type: CALCULATED
+          key: xerox.sbtr.pct
+          delay: 1h
+          value_type: FLOAT
+          units: '!%'
+          params: '100 * last(//xerox.sbtr.raw) / last(//xerox.sbtr.max)'
+          tags:
+            - tag: class
+              value: 'Second Bias Transfer Roll'
+          triggers:
+            - uuid: dda84dee578b4d2ca0d3ea27a0d0ac69
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.sbtr.pct)<= 0'
+              name: 'Second Bias Transfer Roll Empty'
+              priority: HIGH
+            - uuid: ae226521566b4fec83e6d25d4005b261
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.sbtr.pct)<={$SUPPLIES.WARN}'
+              name: 'Second Bias Transfer Roll Low ({ITEM.LASTVALUE1})'
+              priority: WARNING
+        - uuid: 0f7bf85f3c664fd1abdf0eb4630294f5
+          name: 'Second Bias Transfer Roll (raw)'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.9.1.11]'
+          key: xerox.sbtr.raw
+          delay: 1h
+          history: 1d
+          trends: '0'
+        - uuid: 075c8c2542da4b819e4dcdd03bfe661d
+          name: 'Printer Serial Number'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.5.1.1.17.1]'
+          key: xerox.serialnumber
+          delay: 1h
+          value_type: TEXT
+          inventory_link: SERIALNO_A
+        - uuid: 26b049cdd8d0496d80e31b7cbc030656
+          name: 'Printer Status'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.25.3.5.1.1.1
+          key: xerox.status
+          valuemap:
+            name: 'Printer Status'
+        - uuid: a201d77bbc55464d9c88122c59303ca7
+          name: 'Transfer Belt Cleaner max capacity'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.8.1.10]'
+          key: xerox.tbc.max
+          delay: 1h
+          history: 1d
+          trends: '0'
+        - uuid: 4ab239dc8d1c4bfdb04602af68f85f6f
+          name: 'Transfer Belt Cleaner %'
+          type: CALCULATED
+          key: xerox.tbc.pct
+          delay: 1h
+          value_type: FLOAT
+          units: '!%'
+          params: '100 * last(//xerox.tbc.raw) / last(//xerox.tbc.max)'
+          tags:
+            - tag: class
+              value: 'Transfer Belt Cleaner'
+        - uuid: 01a8ea475b18402399ca10add43aa31f
+          name: 'Transfer Belt Cleaner (raw)'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.9.1.10]'
+          key: xerox.tbc.raw
+          delay: 1h
+          history: 1d
+          trends: '0'
+        - uuid: 39edff96c4aa4c929f0185322fc72cfc
+          name: 'Toner Black Install Date'
+          type: SNMP_AGENT
+          snmp_oid: 'get[.1.3.6.1.4.1.253.8.53.20.2.1.9.2.1.57.1]'
+          key: xerox.toner.black.installdate
+          delay: 1h
+          value_type: TEXT
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.split(",")[0];'
+          tags:
+            - tag: class
+              value: toner
+        - uuid: a7da23c710664fc89502e135e998964a
+          name: 'Toner Black max capacity'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.8.1.1]'
+          key: xerox.toner.black.max
+          delay: 10m
+          history: 1d
+          trends: '0'
+        - uuid: 911c451ac2984ddb81207bf3291cbfd9
+          name: 'Toner Black %'
+          type: CALCULATED
+          key: xerox.toner.black.pct
+          delay: 10m
+          value_type: FLOAT
+          units: '!%'
+          params: '100 * last(//xerox.toner.black.raw) / last(//xerox.toner.black.max)'
+          tags:
+            - tag: class
+              value: toner
+          triggers:
+            - uuid: 438107acb0ad488888b2315bc0a6edd9
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.toner.black.pct)=0'
+              name: 'Toner Black Empty'
+              priority: HIGH
+              tags:
+                - tag: class
+                  value: toner
+                - tag: color
+                  value: black
+                - tag: service
+                  value: printer
+            - uuid: 57fc6ca59a8f4d37afba09b59ef3caa2
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.toner.black.pct)<={$TONER_WARN_BLACK}'
+              name: 'Toner Black low ({ITEM.LASTVALUE1})'
+              priority: WARNING
+              tags:
+                - tag: class
+                  value: toner
+                - tag: color
+                  value: black
+                - tag: service
+                  value: printer
+        - uuid: 81caae0e759e43a5aefe454c83a716c8
+          name: 'Toner Black level (raw)'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.9.1.1]'
+          key: xerox.toner.black.raw
+          delay: 10m
+          history: 1d
+          trends: '0'
+        - uuid: 82a86aa4f2dc445185b3bddeb344fa7f
+          name: 'Toner Cyan Install Date'
+          type: SNMP_AGENT
+          snmp_oid: 'get[.1.3.6.1.4.1.253.8.53.20.2.1.9.2.2.57.1]'
+          key: xerox.toner.cyan.installdate
+          delay: 1h
+          value_type: TEXT
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.split(",")[0];'
+          tags:
+            - tag: class
+              value: toner
+        - uuid: fa850d6fb4fa453da9bd2b0ca22dd11b
+          name: 'Toner Cyan max capacity'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.8.1.2]'
+          key: xerox.toner.cyan.max
+          delay: 10m
+          history: 1d
+          trends: '0'
+        - uuid: 4940842f68b647538e102f40a33f87bb
+          name: 'Toner Cyan %'
+          type: CALCULATED
+          key: xerox.toner.cyan.pct
+          delay: 10m
+          value_type: FLOAT
+          units: '!%'
+          params: '100 * last(//xerox.toner.cyan.raw) / last(//xerox.toner.cyan.max)'
+          tags:
+            - tag: class
+              value: toner
+          triggers:
+            - uuid: 52bdf6213f9a42afada635e66cb9bf4e
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.toner.cyan.pct)=0'
+              name: 'Toner Cyan Empty'
+              priority: HIGH
+              tags:
+                - tag: class
+                  value: toner
+                - tag: color
+                  value: cyan
+                - tag: service
+                  value: printer
+            - uuid: 0e20c398690647419c353a6fb8869b27
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.toner.cyan.pct)<={$TONER_WARN_CYAN}'
+              name: 'Toner Cyan low ({ITEM.LASTVALUE1})'
+              priority: WARNING
+              tags:
+                - tag: class
+                  value: toner
+                - tag: color
+                  value: cyan
+                - tag: service
+                  value: printer
+        - uuid: 5b77450a276a44508704e097932871cf
+          name: 'Toner Cyan level (raw)'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.9.1.2]'
+          key: xerox.toner.cyan.raw
+          delay: 10m
+          history: 1d
+          trends: '0'
+        - uuid: fe9c62906f54469e8a455bc750563fc5
+          name: 'Toner Magenta Install Date'
+          type: SNMP_AGENT
+          snmp_oid: 'get[.1.3.6.1.4.1.253.8.53.20.2.1.9.2.3.57.1]'
+          key: xerox.toner.magenta.installdate
+          delay: 1h
+          value_type: TEXT
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.split(",")[0];'
+          tags:
+            - tag: class
+              value: toner
+        - uuid: bb8a4f9d5f2c431ab837554db09b04fd
+          name: 'Toner Magenta max capacity'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.8.1.3]'
+          key: xerox.toner.magenta.max
+          delay: 10m
+          history: 1d
+          trends: '0'
+        - uuid: 1a02d1a769f64a4399f6a5bdd2cb1f63
+          name: 'Toner Magenta %'
+          type: CALCULATED
+          key: xerox.toner.magenta.pct
+          delay: 10m
+          value_type: FLOAT
+          units: '!%'
+          params: '100 * last(//xerox.toner.magenta.raw) / last(//xerox.toner.magenta.max)'
+          tags:
+            - tag: class
+              value: toner
+          triggers:
+            - uuid: 6c460a9a7ace416b8a8d3bc1b0260d6b
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.toner.magenta.pct)=0'
+              name: 'Toner Magenta Empty'
+              priority: HIGH
+              tags:
+                - tag: class
+                  value: toner
+                - tag: color
+                  value: magenta
+                - tag: service
+                  value: printer
+            - uuid: a65e9aa00ae847df83a19a053019fd4d
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.toner.magenta.pct)<={$TONER_WARN_MAGENTA}'
+              name: 'Toner Magenta low ({ITEM.LASTVALUE1})'
+              priority: WARNING
+              tags:
+                - tag: class
+                  value: toner
+                - tag: color
+                  value: magenta
+                - tag: service
+                  value: printer
+        - uuid: e93d724af322432fbbfbe7e77b2f354a
+          name: 'Toner Magenta level (raw)'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.9.1.3]'
+          key: xerox.toner.magenta.raw
+          delay: 10m
+          history: 1d
+          trends: '0'
+        - uuid: 0860e29ba89e4436bd2133f69806bf55
+          name: 'Toner Yellow Install Date'
+          type: SNMP_AGENT
+          snmp_oid: 'get[.1.3.6.1.4.1.253.8.53.20.2.1.9.2.4.57.1]'
+          key: xerox.toner.yellow.installdate
+          delay: 1h
+          value_type: TEXT
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.split(",")[0];'
+          tags:
+            - tag: class
+              value: toner
+        - uuid: feea8c8d44c34d24befb11c59a93df3d
+          name: 'Toner Yellow max capacity'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.8.1.4]'
+          key: xerox.toner.yellow.max
+          delay: 10m
+          history: 1d
+          trends: '0'
+        - uuid: f8d68fd0c3814f00ac19a48d587ec5c7
+          name: 'Toner Yellow %'
+          type: CALCULATED
+          key: xerox.toner.yellow.pct
+          delay: 10m
+          value_type: FLOAT
+          units: '!%'
+          params: '100 * last(//xerox.toner.yellow.raw) / last(//xerox.toner.yellow.max)'
+          tags:
+            - tag: class
+              value: toner
+          triggers:
+            - uuid: 117b14d9ec07446da83dc4329089006b
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.toner.yellow.pct)=0'
+              name: 'Toner Yellow Empty'
+              priority: HIGH
+              tags:
+                - tag: class
+                  value: toner
+                - tag: color
+                  value: yellow
+                - tag: service
+                  value: printer
+            - uuid: edb1ea73d73a4210b8b955f8b593f97b
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.toner.yellow.pct)<={$TONER_WARN_YELLOW}'
+              name: 'Toner Yellow low ({ITEM.LASTVALUE1})'
+              priority: WARNING
+              tags:
+                - tag: class
+                  value: toner
+                - tag: color
+                  value: yellow
+                - tag: service
+                  value: printer
+        - uuid: a6939743feb944b2ae902fd527ea8d79
+          name: 'Toner Yellow level (raw)'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.9.1.4]'
+          key: xerox.toner.yellow.raw
+          delay: 10m
+          history: 1d
+          trends: '0'
+        - uuid: ccd47e8c368f4825a4bacd375db9a080
+          name: 'Printer Type'
+          type: SNMP_AGENT
+          snmp_oid: 'get[.1.3.6.1.2.1.25.3.2.1.3.1]'
+          key: xerox.type
+          delay: 1h
+          value_type: TEXT
+          inventory_link: TYPE
+        - uuid: 5fbb6a8409f24bf2bcfbf2b2d7c0383d
+          name: 'Printer Uptime'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.1.3.0]'
+          key: xerox.uptime
+          delay: 10m
+          units: uptime
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+        - uuid: b248327e7019411694ad1c8109e05f81
+          name: 'Waste Toner Container max capacity'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.8.1.9]'
+          key: xerox.wtc.max
+          delay: 1h
+          history: 1d
+          trends: '0'
+        - uuid: d3e4b404abac42169ebbe0e17aa0e7ff
+          name: 'Waste Toner Container %'
+          type: CALCULATED
+          key: xerox.wtc.pct
+          delay: 1h
+          value_type: FLOAT
+          units: '!%'
+          params: '100 * last(//xerox.wtc.raw) / last(//xerox.wtc.max)'
+          tags:
+            - tag: class
+              value: 'Waste Toner Container'
+          triggers:
+            - uuid: b3c058e903e64e819dd754a7bd603984
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.wtc.pct)<=0'
+              name: 'Waste Toner Container Empty'
+              priority: HIGH
+            - uuid: c7154acdcc6d4a6c8b4b1fb07add53fa
+              expression: 'last(/Xerox AltaLink C81xx by SNMP/xerox.wtc.pct)<={$SUPPLIES.WARN}'
+              name: 'Waste Toner Container Low ({ITEM.LASTVALUE1})'
+              priority: WARNING
+        - uuid: 21acb6100c384a98a3ff9628c2e07ae1
+          name: 'Waste Toner Container (raw)'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.43.11.1.1.9.1.9]'
+          key: xerox.wtc.raw
+          delay: 1h
+          history: 1d
+          trends: '0'
+      discovery_rules:
+        - uuid: 7bbf8bac9f454221821629b586d964a9
+          name: 'Printer paper trays discovery'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#TRAYNAME},1.3.6.1.2.1.43.8.2.1.18,{#TRAYSIZE},1.3.6.1.2.1.43.8.2.1.12]'
+          key: printer.tray.discovery
+          delay: 10m
+          filter:
+            conditions:
+              - macro: '{#TRAYNAME}'
+                value: '(?i)bypass'
+                operator: NOT_MATCHES_REGEX
+          item_prototypes:
+            - uuid: 517e11b48f4b46d8848ce43adc228c94
+              name: 'Paper {#TRAYNAME} level (raw)'
+              type: SNMP_AGENT
+              snmp_oid: 'get[1.3.6.1.2.1.43.8.2.1.10.{#SNMPINDEX}]'
+              key: 'printer.tray.level[{#SNMPINDEX}]'
+              delay: 10m
+            - uuid: cb5bc624d5c643ad9144feb0a452b7a1
+              name: 'Paper {#TRAYNAME} max capacity'
+              type: SNMP_AGENT
+              snmp_oid: 'get[1.3.6.1.2.1.43.8.2.1.9.{#SNMPINDEX}]'
+              key: 'printer.tray.max[{#SNMPINDEX}]'
+              delay: 10m
+            - uuid: 7dc09bdc6c4e4f1e90c69b86206f0828
+              name: 'Paper {#TRAYNAME} level (%)'
+              type: CALCULATED
+              key: 'printer.tray.percent[{#SNMPINDEX}]'
+              delay: 10m
+              units: '%'
+              params: |
+                100 * last(//printer.tray.level[{#SNMPINDEX}])
+                    / last(//printer.tray.max[{#SNMPINDEX}])
+              tags:
+                - tag: class
+                  value: tray
+              trigger_prototypes:
+                - uuid: 202d6927ef3745118bc0be279066570a
+                  expression: 'last(/Xerox AltaLink C81xx by SNMP/printer.tray.percent[{#SNMPINDEX}])=0'
+                  name: 'Paper EMPTY in {#TRAYNAME}'
+                  priority: WARNING
+                  tags:
+                    - tag: event_type
+                      value: paper_empty
+                    - tag: service
+                      value: printer
+                    - tag: supply
+                      value: tray
+                - uuid: 715764dc6e1440e2bdb74eaf8258f0f8
+                  expression: 'last(/Xerox AltaLink C81xx by SNMP/printer.tray.percent[{#SNMPINDEX}])<={$TRAY_LOW_PCT}'
+                  name: 'Paper low in {#TRAYNAME} ({ITEM.LASTVALUE1})'
+                  priority: INFO
+                  tags:
+                    - tag: event_type
+                      value: paper_low
+                    - tag: service
+                      value: printer
+                    - tag: supply
+                      value: tray
+            - uuid: 25e3244d86c047e4aeddae2747fcb450
+              name: 'Paper {#TRAYNAME} Size'
+              type: SNMP_AGENT
+              snmp_oid: 'get[.1.3.6.1.2.1.43.8.2.1.12.{#SNMPINDEX}]'
+              key: 'printer.tray.size[{#SNMPINDEX}]'
+              delay: 10m
+              value_type: TEXT
+              preprocessing:
+                - type: JAVASCRIPT
+                  parameters:
+                    - |
+                      switch (value.toLowerCase()) {
+                          case "iso-a4": return "A4";
+                          case "iso-a3": return "A3";
+                          case "iso-a5": return "A5";
+                          case "na-letter": return "Letter";
+                          default: return value;
+                      }
+              trigger_prototypes:
+                - uuid: bb96fdd8115545b0a258a5c4f0df0258
+                  expression: 'change(/Xerox AltaLink C81xx by SNMP/printer.tray.size[{#SNMPINDEX}])=1'
+                  name: 'Tray {#TRAYINDEX} size changed'
+                  priority: INFO
+                  manual_close: 'YES'
+                  tags:
+                    - tag: event_type
+                      value: tray_size_change
+                    - tag: supply
+                      value: tray
+      tags:
+        - tag: device
+          value: 'Xerox Printer'
+        - tag: service
+          value: printer
+      macros:
+        - macro: '{$PRINTER.TONER.WARN}'
+          value: '5'
+          description: 'Percentage when to warn for low toner'
+        - macro: '{$SUPPLIES.WARN}'
+          value: '5'
+          description: 'Percentage when to warn for low supplies'
+        - macro: '{$TONER_WARN_BLACK}'
+          value: '5'
+          description: 'Percentage when to warn for low black toner'
+        - macro: '{$TONER_WARN_CYAN}'
+          value: '5'
+          description: 'Percentage when to warn for low cyan toner'
+        - macro: '{$TONER_WARN_MAGENTA}'
+          value: '5'
+          description: 'Percentage when to warn for low magenta toner'
+        - macro: '{$TONER_WARN_YELLOW}'
+          value: '5'
+          description: 'Percentage when to warn for low yellow toner'
+        - macro: '{$TRAY_LOW_PCT}'
+          value: '2'
+          description: 'Percentage when to warn for low paper'
+      dashboards:
+        - uuid: f2fff46f973e429e8098fe701b95cfce
+          name: 'Printer Overview'
+          display_period: '60'
+          pages:
+            - widgets:
+                - type: gauge
+                  width: '12'
+                  height: '3'
+                  hide_header: 'YES'
+                  fields:
+                    - type: INTEGER
+                      name: decimal_places
+                      value: '0'
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Xerox AltaLink C81xx by SNMP'
+                        key: xerox.toner.black.pct
+                    - type: STRING
+                      name: max
+                      value: '100'
+                    - type: STRING
+                      name: min
+                      value: '0'
+                    - type: STRING
+                      name: thresholds.0.color
+                      value: FF0000
+                    - type: STRING
+                      name: thresholds.0.threshold
+                      value: '0'
+                    - type: STRING
+                      name: thresholds.1.color
+                      value: FFFF00
+                    - type: STRING
+                      name: thresholds.1.threshold
+                      value: '10'
+                    - type: STRING
+                      name: thresholds.2.color
+                      value: 00FF00
+                    - type: STRING
+                      name: thresholds.2.threshold
+                      value: '11'
+                    - type: STRING
+                      name: units
+                      value: '%'
+                - type: svggraph
+                  name: 'Pages Printed'
+                  'y': '3'
+                  width: '48'
+                  height: '5'
+                  fields:
+                    - type: INTEGER
+                      name: ds.0.approximation
+                      value: '4'
+                    - type: STRING
+                      name: ds.0.color
+                      value: 0040FF
+                    - type: STRING
+                      name: ds.0.data_set_label
+                      value: 'Pages Total'
+                    - type: STRING
+                      name: ds.0.items.0
+                      value: 'Pages Print (delta)'
+                    - type: INTEGER
+                      name: ds.0.type
+                      value: '3'
+                    - type: INTEGER
+                      name: ds.1.aggregate_function
+                      value: '3'
+                    - type: INTEGER
+                      name: ds.1.approximation
+                      value: '4'
+                    - type: STRING
+                      name: ds.1.color
+                      value: FFD54F
+                    - type: STRING
+                      name: ds.1.data_set_label
+                      value: 'Pages Color'
+                    - type: STRING
+                      name: ds.1.items.0
+                      value: 'Pages Print Color (delta)'
+                    - type: INTEGER
+                      name: ds.1.stacked
+                      value: '1'
+                    - type: INTEGER
+                      name: ds.1.transparency
+                      value: '3'
+                    - type: INTEGER
+                      name: ds.1.type
+                      value: '3'
+                    - type: INTEGER
+                      name: ds.2.aggregate_function
+                      value: '3'
+                    - type: INTEGER
+                      name: ds.2.approximation
+                      value: '4'
+                    - type: STRING
+                      name: ds.2.color
+                      value: 13191C
+                    - type: STRING
+                      name: ds.2.data_set_label
+                      value: 'Pages Black and white'
+                    - type: STRING
+                      name: ds.2.items.0
+                      value: 'Pages Print B/W (delta)'
+                    - type: INTEGER
+                      name: ds.2.stacked
+                      value: '1'
+                    - type: INTEGER
+                      name: ds.2.transparency
+                      value: '3'
+                    - type: INTEGER
+                      name: ds.2.type
+                      value: '3'
+                    - type: STRING
+                      name: reference
+                      value: DYGUT
+                    - type: INTEGER
+                      name: righty
+                      value: '0'
+                - type: topitems
+                  name: Consumables
+                  'y': '8'
+                  width: '17'
+                  height: '5'
+                  fields:
+                    - type: INTEGER
+                      name: columns.0.decimal_places
+                      value: '0'
+                    - type: INTEGER
+                      name: columns.0.display
+                      value: '2'
+                    - type: STRING
+                      name: columns.0.items.0
+                      value: 'Drum Cartridge*%'
+                    - type: STRING
+                      name: columns.0.max
+                      value: '100'
+                    - type: STRING
+                      name: columns.0.min
+                      value: '0'
+                    - type: STRING
+                      name: columns.0.thresholds.0.color
+                      value: FF0000
+                    - type: STRING
+                      name: columns.0.thresholds.0.threshold
+                      value: '1'
+                    - type: STRING
+                      name: columns.0.thresholds.1.color
+                      value: FFFF00
+                    - type: STRING
+                      name: columns.0.thresholds.1.threshold
+                      value: '2'
+                    - type: STRING
+                      name: columns.0.thresholds.2.color
+                      value: 00FF00
+                    - type: STRING
+                      name: columns.0.thresholds.2.threshold
+                      value: '10'
+                    - type: INTEGER
+                      name: columns.1.decimal_places
+                      value: '0'
+                    - type: INTEGER
+                      name: columns.1.display
+                      value: '2'
+                    - type: STRING
+                      name: columns.1.items.0
+                      value: 'Second Bias Transfer Roll %'
+                    - type: STRING
+                      name: columns.1.max
+                      value: '100'
+                    - type: STRING
+                      name: columns.1.min
+                      value: '0'
+                    - type: STRING
+                      name: columns.1.thresholds.0.color
+                      value: FF0000
+                    - type: STRING
+                      name: columns.1.thresholds.0.threshold
+                      value: '1'
+                    - type: STRING
+                      name: columns.1.thresholds.1.color
+                      value: FFFF00
+                    - type: STRING
+                      name: columns.1.thresholds.1.threshold
+                      value: '2'
+                    - type: STRING
+                      name: columns.1.thresholds.2.color
+                      value: 00FF00
+                    - type: STRING
+                      name: columns.1.thresholds.2.threshold
+                      value: '10'
+                    - type: INTEGER
+                      name: columns.2.decimal_places
+                      value: '0'
+                    - type: INTEGER
+                      name: columns.2.display
+                      value: '2'
+                    - type: STRING
+                      name: columns.2.items.0
+                      value: 'Transfer Belt Cleaner %'
+                    - type: STRING
+                      name: columns.2.max
+                      value: '100'
+                    - type: STRING
+                      name: columns.2.min
+                      value: '0'
+                    - type: STRING
+                      name: columns.2.thresholds.0.color
+                      value: FF0000
+                    - type: STRING
+                      name: columns.2.thresholds.0.threshold
+                      value: '1'
+                    - type: STRING
+                      name: columns.2.thresholds.1.color
+                      value: FFFF00
+                    - type: STRING
+                      name: columns.2.thresholds.1.threshold
+                      value: '2'
+                    - type: STRING
+                      name: columns.2.thresholds.2.color
+                      value: 00FF00
+                    - type: STRING
+                      name: columns.2.thresholds.2.threshold
+                      value: '10'
+                    - type: INTEGER
+                      name: columns.3.decimal_places
+                      value: '0'
+                    - type: INTEGER
+                      name: columns.3.display
+                      value: '2'
+                    - type: STRING
+                      name: columns.3.items.0
+                      value: 'Waste Toner Container %'
+                    - type: STRING
+                      name: columns.3.max
+                      value: '100'
+                    - type: STRING
+                      name: columns.3.min
+                      value: '0'
+                    - type: STRING
+                      name: columns.3.thresholds.0.color
+                      value: FF465C
+                    - type: STRING
+                      name: columns.3.thresholds.0.threshold
+                      value: '1'
+                    - type: STRING
+                      name: columns.3.thresholds.1.color
+                      value: FFFF00
+                    - type: STRING
+                      name: columns.3.thresholds.1.threshold
+                      value: '2'
+                    - type: STRING
+                      name: columns.3.thresholds.2.color
+                      value: 00FF00
+                    - type: STRING
+                      name: columns.3.thresholds.2.threshold
+                      value: '10'
+                    - type: INTEGER
+                      name: item_ordering_order_by
+                      value: '2'
+                    - type: INTEGER
+                      name: layout
+                      value: '1'
+                    - type: INTEGER
+                      name: problems
+                      value: '2'
+                    - type: INTEGER
+                      name: show_column_header
+                      value: '0'
+                - type: problems
+                  'y': '13'
+                  width: '48'
+                  height: '4'
+                  fields:
+                    - type: STRING
+                      name: reference
+                      value: XZKJX
+                    - type: INTEGER
+                      name: show
+                      value: '3'
+                - type: gauge
+                  x: '12'
+                  width: '12'
+                  height: '3'
+                  hide_header: 'YES'
+                  fields:
+                    - type: INTEGER
+                      name: decimal_places
+                      value: '0'
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Xerox AltaLink C81xx by SNMP'
+                        key: xerox.toner.cyan.pct
+                    - type: STRING
+                      name: max
+                      value: '100'
+                    - type: STRING
+                      name: min
+                      value: '0'
+                    - type: STRING
+                      name: thresholds.0.color
+                      value: FF0000
+                    - type: STRING
+                      name: thresholds.0.threshold
+                      value: '0'
+                    - type: STRING
+                      name: thresholds.1.color
+                      value: FFFF00
+                    - type: STRING
+                      name: thresholds.1.threshold
+                      value: '10'
+                    - type: STRING
+                      name: thresholds.2.color
+                      value: 00FF00
+                    - type: STRING
+                      name: thresholds.2.threshold
+                      value: '11'
+                    - type: STRING
+                      name: units
+                      value: '%'
+                - type: topitems
+                  name: 'Paper trays'
+                  x: '17'
+                  'y': '8'
+                  width: '17'
+                  height: '5'
+                  fields:
+                    - type: INTEGER
+                      name: columns.0.decimal_places
+                      value: '0'
+                    - type: INTEGER
+                      name: columns.0.display
+                      value: '2'
+                    - type: STRING
+                      name: columns.0.items.0
+                      value: 'Paper Tray*level (%)'
+                    - type: STRING
+                      name: columns.0.max
+                      value: '100'
+                    - type: STRING
+                      name: columns.0.min
+                      value: '0'
+                    - type: STRING
+                      name: columns.0.thresholds.0.color
+                      value: FF0000
+                    - type: STRING
+                      name: columns.0.thresholds.0.threshold
+                      value: '0'
+                    - type: STRING
+                      name: columns.0.thresholds.1.color
+                      value: FFFF00
+                    - type: STRING
+                      name: columns.0.thresholds.1.threshold
+                      value: '10'
+                    - type: STRING
+                      name: columns.0.thresholds.2.color
+                      value: 00FF00
+                    - type: STRING
+                      name: columns.0.thresholds.2.threshold
+                      value: '11'
+                    - type: INTEGER
+                      name: columns.1.display_value_as
+                      value: '2'
+                    - type: STRING
+                      name: columns.1.items.0
+                      value: 'Paper Tray*size'
+                    - type: INTEGER
+                      name: item_ordering_order_by
+                      value: '2'
+                    - type: INTEGER
+                      name: layout
+                      value: '1'
+                    - type: INTEGER
+                      name: problems
+                      value: '2'
+                    - type: INTEGER
+                      name: show_column_header
+                      value: '0'
+                - type: gauge
+                  x: '24'
+                  width: '12'
+                  height: '3'
+                  hide_header: 'YES'
+                  fields:
+                    - type: INTEGER
+                      name: decimal_places
+                      value: '0'
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Xerox AltaLink C81xx by SNMP'
+                        key: xerox.toner.magenta.pct
+                    - type: STRING
+                      name: max
+                      value: '100'
+                    - type: STRING
+                      name: min
+                      value: '0'
+                    - type: STRING
+                      name: thresholds.0.color
+                      value: FF0000
+                    - type: STRING
+                      name: thresholds.0.threshold
+                      value: '0'
+                    - type: STRING
+                      name: thresholds.1.color
+                      value: FFFF00
+                    - type: STRING
+                      name: thresholds.1.threshold
+                      value: '10'
+                    - type: STRING
+                      name: thresholds.2.color
+                      value: 00FF00
+                    - type: STRING
+                      name: thresholds.2.threshold
+                      value: '11'
+                    - type: STRING
+                      name: units
+                      value: '%'
+                - type: topitems
+                  name: 'Page Counter'
+                  x: '34'
+                  'y': '8'
+                  width: '14'
+                  height: '5'
+                  fields:
+                    - type: INTEGER
+                      name: columns.0.decimal_places
+                      value: '0'
+                    - type: STRING
+                      name: columns.0.items.0
+                      value: 'Pages Print Total'
+                    - type: INTEGER
+                      name: columns.1.decimal_places
+                      value: '0'
+                    - type: STRING
+                      name: columns.1.items.0
+                      value: 'Pages Print Color'
+                    - type: INTEGER
+                      name: columns.2.decimal_places
+                      value: '0'
+                    - type: STRING
+                      name: columns.2.items.0
+                      value: 'Pages Print B/W'
+                    - type: INTEGER
+                      name: columns.3.decimal_places
+                      value: '0'
+                    - type: STRING
+                      name: columns.3.items.0
+                      value: 'Pages Copied Color'
+                    - type: INTEGER
+                      name: columns.4.decimal_places
+                      value: '0'
+                    - type: STRING
+                      name: columns.4.items.0
+                      value: 'Pages Copied B/W'
+                    - type: INTEGER
+                      name: columns.5.decimal_places
+                      value: '0'
+                    - type: STRING
+                      name: columns.5.items.0
+                      value: 'Pages Copied Total'
+                    - type: INTEGER
+                      name: item_ordering_order_by
+                      value: '2'
+                    - type: INTEGER
+                      name: layout
+                      value: '1'
+                    - type: INTEGER
+                      name: show_column_header
+                      value: '0'
+                - type: gauge
+                  x: '36'
+                  width: '12'
+                  height: '3'
+                  hide_header: 'YES'
+                  fields:
+                    - type: INTEGER
+                      name: decimal_places
+                      value: '0'
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Xerox AltaLink C81xx by SNMP'
+                        key: xerox.toner.yellow.pct
+                    - type: STRING
+                      name: max
+                      value: '100'
+                    - type: STRING
+                      name: min
+                      value: '0'
+                    - type: STRING
+                      name: thresholds.0.color
+                      value: FF0000
+                    - type: STRING
+                      name: thresholds.0.threshold
+                      value: '2'
+                    - type: STRING
+                      name: thresholds.1.color
+                      value: FFFF00
+                    - type: STRING
+                      name: thresholds.1.threshold
+                      value: '10'
+                    - type: STRING
+                      name: thresholds.2.color
+                      value: 00FF00
+                    - type: STRING
+                      name: thresholds.2.threshold
+                      value: '11'
+                    - type: STRING
+                      name: units
+                      value: '%'
+                - type: item
+                  name: 'Printer status'
+                  x: '48'
+                  width: '14'
+                  fields:
+                    - type: INTEGER
+                      name: decimal_places
+                      value: '0'
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Xerox AltaLink C81xx by SNMP'
+                        key: xerox.status
+                    - type: INTEGER
+                      name: show.0
+                      value: '2'
+                    - type: INTEGER
+                      name: units_bold
+                      value: '0'
+                    - type: INTEGER
+                      name: units_show
+                      value: '0'
+                    - type: INTEGER
+                      name: value_size
+                      value: '30'
+                - type: item
+                  name: 'Printer Name'
+                  x: '48'
+                  'y': '2'
+                  width: '14'
+                  fields:
+                    - type: INTEGER
+                      name: decimal_places
+                      value: '0'
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Xerox AltaLink C81xx by SNMP'
+                        key: xerox.name
+                    - type: INTEGER
+                      name: show.0
+                      value: '2'
+                    - type: INTEGER
+                      name: units_bold
+                      value: '0'
+                    - type: INTEGER
+                      name: units_show
+                      value: '0'
+                    - type: INTEGER
+                      name: value_size
+                      value: '20'
+                - type: item
+                  name: 'Printer Type'
+                  x: '48'
+                  'y': '4'
+                  width: '14'
+                  fields:
+                    - type: INTEGER
+                      name: decimal_places
+                      value: '0'
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Xerox AltaLink C81xx by SNMP'
+                        key: xerox.type
+                    - type: INTEGER
+                      name: show.0
+                      value: '2'
+                    - type: INTEGER
+                      name: units_bold
+                      value: '0'
+                    - type: INTEGER
+                      name: units_show
+                      value: '0'
+                    - type: INTEGER
+                      name: value_size
+                      value: '20'
+                - type: item
+                  name: 'Serial number'
+                  x: '48'
+                  'y': '6'
+                  width: '14'
+                  fields:
+                    - type: INTEGER
+                      name: decimal_places
+                      value: '0'
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Xerox AltaLink C81xx by SNMP'
+                        key: xerox.serialnumber
+                    - type: INTEGER
+                      name: show.0
+                      value: '2'
+                    - type: INTEGER
+                      name: units_bold
+                      value: '0'
+                    - type: INTEGER
+                      name: units_show
+                      value: '0'
+                    - type: INTEGER
+                      name: value_size
+                      value: '30'
+                - type: item
+                  name: 'Printer Location'
+                  x: '48'
+                  'y': '8'
+                  width: '14'
+                  fields:
+                    - type: INTEGER
+                      name: decimal_places
+                      value: '0'
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Xerox AltaLink C81xx by SNMP'
+                        key: xerox.location
+                    - type: INTEGER
+                      name: show.0
+                      value: '2'
+                    - type: INTEGER
+                      name: units_bold
+                      value: '0'
+                    - type: INTEGER
+                      name: units_show
+                      value: '0'
+                    - type: INTEGER
+                      name: value_size
+                      value: '20'
+                - type: topitems
+                  name: 'Install Dates'
+                  x: '48'
+                  'y': '10'
+                  width: '14'
+                  height: '7'
+                  fields:
+                    - type: INTEGER
+                      name: columns.0.display_value_as
+                      value: '2'
+                    - type: STRING
+                      name: columns.0.items.0
+                      value: '*Install Date'
+                    - type: INTEGER
+                      name: host_ordering_limit
+                      value: '50'
+                    - type: INTEGER
+                      name: item_ordering_limit
+                      value: '50'
+                    - type: INTEGER
+                      name: item_ordering_order_by
+                      value: '2'
+                    - type: INTEGER
+                      name: layout
+                      value: '1'
+                    - type: INTEGER
+                      name: show_column_header
+                      value: '0'
+      valuemaps:
+        - uuid: 2bf43fea75714dcaad59456bfc343d7b
+          name: 'Printer Status'
+          mappings:
+            - value: '1'
+              newvalue: idle
+            - value: '2'
+              newvalue: unknown
+            - value: '3'
+              newvalue: idle
+            - value: '4'
+              newvalue: printing
+            - value: '5'
+              newvalue: warmup
+  triggers:
+    - uuid: 673be8027c094890a3ad7e1cc2289461
+      expression: 'change(/Xerox AltaLink C81xx by SNMP/xerox.toner.yellow.installdate)=1 and last(/Xerox AltaLink C81xx by SNMP/xerox.toner.yellow.pct)>=0'
+      name: 'Toner Yellow replaced (install date changed)'
+      priority: INFO
+      tags:
+        - tag: class
+          value: Toner

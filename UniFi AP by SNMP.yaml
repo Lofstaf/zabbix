@@ -1,0 +1,266 @@
+zabbix_export:
+  version: '7.4'
+  template_groups:
+    - uuid: 36bff6c29af64692839d077febfc7079
+      name: 'Templates/Network devices'
+  templates:
+    - uuid: 45dc32d5fcd64584885a4c90172ab5be
+      template: 'UniFi AP by SNMP'
+      name: 'UniFi AP by SNMP'
+      vendor:
+        name: Löfstaf
+        version: 7.4-1
+      groups:
+        - name: 'Templates/Network devices'
+      items:
+        - uuid: 13478303938f4efdbae05edb4ece8bf1
+          name: 'Device Location'
+          type: SNMP_AGENT
+          snmp_oid: 'get[.1.3.6.1.2.1.1.6.0]'
+          key: unifi.device.location
+          delay: 1h
+          value_type: TEXT
+          inventory_link: LOCATION
+        - uuid: ffd05e4bbdf04c1abce359a2a679a1b3
+          name: 'Device MAC Address'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.2.2.1.6.2]'
+          key: unifi.device.mac
+          delay: 1h
+          value_type: TEXT
+          inventory_link: MACADDRESS_A
+        - uuid: d1f58a80993b4e158040373d19fe310b
+          name: 'Device Model'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.4.1.41112.1.6.3.3.0]'
+          key: unifi.device.model
+          delay: 1h
+          value_type: TEXT
+          inventory_link: TYPE_FULL
+        - uuid: ec06b5643cd348d8854a431d7f2deb4b
+          name: 'Device Name'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.1.5.0]'
+          key: unifi.device.name
+          delay: 1h
+          value_type: TEXT
+          inventory_link: NAME
+        - uuid: 8c3ff9dbe0094a649b7fef9e6843e499
+          name: 'Device Uptime'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.2.1.1.3.0]'
+          key: unifi.device.uptime
+          delay: 10m
+          units: uptime
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+        - uuid: 156fb6519c304f6eb9166e7a9d02077b
+          name: 'Device Firmware version'
+          type: SNMP_AGENT
+          snmp_oid: 'get[1.3.6.1.4.1.41112.1.6.3.6.0]'
+          key: unifi.device.version
+          delay: 1h
+          value_type: TEXT
+          inventory_link: OS
+      discovery_rules:
+        - uuid: e9b916a6e13d49aca05108b31e7bb0f1
+          name: 'Network interfaces'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#IFNAME},1.3.6.1.2.1.2.2.1.2]'
+          key: unifi.if.discovery
+          delay: 1h
+          filter:
+            conditions:
+              - macro: '{#IFNAME}'
+                value: ^(eth0|wifi0|wifi1)$
+          item_prototypes:
+            - uuid: ec5fcf3bd6d44f42acfed66cff90b18c
+              name: 'Incoming traffic on {#IFNAME}'
+              type: SNMP_AGENT
+              snmp_oid: 'get[1.3.6.1.2.1.31.1.1.1.6.{#SNMPINDEX}]'
+              key: 'unifi.if.in[{#IFNAME}]'
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+            - uuid: 9810c0313b9a4855a42424329742c4a4
+              name: 'Interface {#IFNAME} MAC address'
+              type: SNMP_AGENT
+              snmp_oid: 'get[.1.3.6.1.2.1.2.2.1.6.{#SNMPINDEX}]'
+              key: 'unifi.if.mac.[{#IFNAME}]'
+              value_type: TEXT
+            - uuid: dbb1c6caafde4843a98f5ae80d939bec
+              name: 'Outgoing traffic on {#IFNAME}'
+              type: SNMP_AGENT
+              snmp_oid: 'get[1.3.6.1.2.1.31.1.1.1.10.{#SNMPINDEX}]'
+              key: 'unifi.if.out[{#IFNAME}]'
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+            - uuid: 407bb01d7b284c2c97cf00d39e7e2df8
+              name: 'Interface {#IFNAME} speed'
+              type: SNMP_AGENT
+              snmp_oid: 'get[1.3.6.1.2.1.31.1.1.1.15.{#SNMPINDEX}]'
+              key: 'unifi.if.speed.[{#IFNAME}]'
+              units: '!Mbps'
+        - uuid: 4c196d09526a4faf9f7c2ae77e085514
+          name: 'Radio Discovery'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#RADIO_NAME},1.3.6.1.4.1.41112.1.6.1.1.1.2]'
+          key: unifi.radio.discovery
+          delay: 1h
+          filter:
+            conditions:
+              - macro: '{#RADIO_NAME}'
+                value: ^(wifi0|wifi1)$
+          item_prototypes:
+            - uuid: ee928c604d7c4a759e2d2a1101599053
+              name: 'Radio {#RADIO_NAME}: channel utilization other BSS'
+              type: SNMP_AGENT
+              snmp_oid: 'get[1.3.6.1.4.1.41112.1.6.1.1.1.9.{#SNMPINDEX}]'
+              key: 'unifi.radio.cu.other[{#RADIO_NAME}]'
+              units: '%'
+            - uuid: fdb866cf10f940bb9993f1125061800f
+              name: 'Radio {#RADIO_NAME}: channel utilization self RX'
+              type: SNMP_AGENT
+              snmp_oid: 'get[1.3.6.1.4.1.41112.1.6.1.1.1.7.{#SNMPINDEX}]'
+              key: 'unifi.radio.cu.selfrx[{#RADIO_NAME}]'
+              units: '%'
+            - uuid: b3464533689046ba958ebaab704bacd6
+              name: 'Radio {#RADIO_NAME}: channel utilization self TX'
+              type: SNMP_AGENT
+              snmp_oid: 'get[1.3.6.1.4.1.41112.1.6.1.1.1.8.{#SNMPINDEX}]'
+              key: 'unifi.radio.cu.selftx[{#RADIO_NAME}]'
+              units: '%'
+            - uuid: 0a3a4aa4a4c04419881acd9217d546fd
+              name: 'Radio {#RADIO_NAME}: channel utilization total'
+              type: SNMP_AGENT
+              snmp_oid: 'get[1.3.6.1.4.1.41112.1.6.1.1.1.6.{#SNMPINDEX}]'
+              key: 'unifi.radio.cu.total[{#RADIO_NAME}]'
+              units: '%'
+              trigger_prototypes:
+                - uuid: 300ba5413cea4049a4aed17f175d5753
+                  expression: 'avg(/UniFi AP by SNMP/unifi.radio.cu.total[{#RADIO_NAME}],5m)>80'
+                  name: 'High channel utilization on {#RADIO_NAME} (>{ITEM.VALUE} for 5m)'
+                  priority: WARNING
+        - uuid: b64dafe6fff24266933512a2787bf8e0
+          name: SSIDs
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[ {#UNIFI_SSID},1.3.6.1.4.1.41112.1.6.1.2.1.6, {#UNIFI_IFACE},1.3.6.1.4.1.41112.1.6.1.2.1.7, {#UNIFI_USAGE},1.3.6.1.4.1.41112.1.6.1.2.1.23]'
+          key: unifi.wlan.discovery
+          delay: 1h
+          filter:
+            conditions:
+              - macro: '{#UNIFI_SSID}'
+                value: '^(?!element-|vwire-).+'
+          item_prototypes:
+            - uuid: 6105fdc556034b30b24ca30d5650a895
+              name: 'SSID {#UNIFI_SSID} ({#UNIFI_IFACE}): BSSID'
+              type: SNMP_AGENT
+              snmp_oid: 'get[1.3.6.1.4.1.41112.1.6.1.2.1.2.{#SNMPINDEX}]'
+              key: 'unifi.wlan.bssid[{#UNIFI_SSID},{#UNIFI_IFACE}]'
+              value_type: TEXT
+              tags:
+                - tag: ssid
+                  value: '{#UNIFI_SSID}'
+            - uuid: 237da7974c434814866c436975464268
+              name: 'SSID {#UNIFI_SSID} ({#UNIFI_IFACE}): connected clients'
+              type: SNMP_AGENT
+              snmp_oid: 'get[1.3.6.1.4.1.41112.1.6.1.2.1.8.{#SNMPINDEX}]'
+              key: 'unifi.wlan.clients[{#UNIFI_SSID},{#UNIFI_IFACE}]'
+              tags:
+                - tag: ssid
+                  value: '{#UNIFI_SSID}'
+              trigger_prototypes:
+                - uuid: c957e50003614e08b39e9ef507c70075
+                  expression: 'avg(/UniFi AP by SNMP/unifi.wlan.clients[{#UNIFI_SSID},{#UNIFI_IFACE}],5m)>={$CLIENT_COUNT_WARN}'
+                  name: 'SSID {#UNIFI_SSID} ({#UNIFI_IFACE}) – {ITEM.LASTVALUE1} clients (high)'
+                  priority: WARNING
+                - uuid: f8f04a3097724a5db0c309bf2680e169
+                  expression: 'avg(/UniFi AP by SNMP/unifi.wlan.clients[{#UNIFI_SSID},{#UNIFI_IFACE}],5m)>={$CLIENT_COUNT_WARN}*2'
+                  name: 'SSID {#UNIFI_SSID} ({#UNIFI_IFACE}) – {ITEM.LASTVALUE1} clients (very high)'
+                  priority: HIGH
+            - uuid: 6a381eefb29b4f34a2f5a44d2c491807
+              name: 'SSID {#UNIFI_SSID} ({#UNIFI_IFACE}): Inbound traffic'
+              type: SNMP_AGENT
+              snmp_oid: 'get[1.3.6.1.4.1.41112.1.6.1.2.1.10.{#SNMPINDEX}]'
+              key: 'unifi.wlan.in[{#UNIFI_SSID},{#UNIFI_IFACE}]'
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: ssid
+                  value: '{#UNIFI_SSID}'
+            - uuid: e11d80288ea64be48b09501f56ea6e6f
+              name: 'SSID {#UNIFI_SSID} ({#UNIFI_IFACE}): Outbound traffic'
+              type: SNMP_AGENT
+              snmp_oid: 'get[1.3.6.1.4.1.41112.1.6.1.2.1.16.{#SNMPINDEX}]'
+              key: 'unifi.wlan.out[{#UNIFI_SSID},{#UNIFI_IFACE}]'
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: ssid
+                  value: '{#UNIFI_SSID}'
+            - uuid: af76ccc7215840a69634100fb0592469
+              name: 'SSID {#UNIFI_SSID} ({#UNIFI_IFACE}): Rx Errors'
+              type: SNMP_AGENT
+              snmp_oid: 'get[1.3.6.1.4.1.41112.1.6.1.2.1.13.{#SNMPINDEX}]'
+              key: 'unifi.wlan.rxerrors[{#UNIFI_SSID},{#UNIFI_IFACE}]'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+              tags:
+                - tag: ssid
+                  value: '{#UNIFI_SSID}'
+            - uuid: fbffac4d269b4bcfb10a21d5f96cdcac
+              name: 'SSID {#UNIFI_SSID} ({#UNIFI_IFACE}): Tx Errors'
+              type: SNMP_AGENT
+              snmp_oid: 'get[1.3.6.1.4.1.41112.1.6.1.2.1.18.{#SNMPINDEX}]'
+              key: 'unifi.wlan.txerrors[{#UNIFI_SSID},{#UNIFI_IFACE}]'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+              tags:
+                - tag: ssid
+                  value: '{#UNIFI_SSID}'
+            - uuid: f2f8d3e258a848eba8d8cb1b37d6cd0f
+              name: 'SSID {#UNIFI_SSID} ({#UNIFI_IFACE}): Tx Power'
+              type: SNMP_AGENT
+              snmp_oid: 'get[1.3.6.1.4.1.41112.1.6.1.2.1.21.{#SNMPINDEX}]'
+              key: 'unifi.wlan.txpower[{#UNIFI_SSID},{#UNIFI_IFACE}]'
+              units: dB
+              tags:
+                - tag: ssid
+                  value: '{#UNIFI_SSID}'
+            - uuid: 77f8c4c8572a401ca1535d89e77747c9
+              name: 'SSID {#UNIFI_SSID} ({#UNIFI_IFACE}): Tx Retries'
+              type: SNMP_AGENT
+              snmp_oid: 'get[1.3.6.1.4.1.41112.1.6.1.2.1.20.{#SNMPINDEX}]'
+              key: 'unifi.wlan.txretries[{#UNIFI_SSID},{#UNIFI_IFACE}]'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+              tags:
+                - tag: ssid
+                  value: '{#UNIFI_SSID}'
+            - uuid: a3b99cc5b3b44d53aa763a099a265ce6
+              name: 'SSID {#UNIFI_SSID} ({#UNIFI_IFACE}): Usage'
+              type: SNMP_AGENT
+              snmp_oid: 'get[1.3.6.1.4.1.41112.1.6.1.2.1.23.{#SNMPINDEX}]'
+              key: 'unifi.wlan.usage[{#UNIFI_SSID},{#UNIFI_IFACE}]'
+              value_type: TEXT
+              tags:
+                - tag: usage
+                  value: '{#UNIFI_USAGE}'
+      tags:
+        - tag: device
+          value: 'UniFi Access Point'
+      macros:
+        - macro: '{$CLIENT_COUNT_WARN}'
+          value: '20'
+          description: 'Number of clients per radio to warn.'
